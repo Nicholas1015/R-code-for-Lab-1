@@ -611,3 +611,56 @@ R-squared (R²)         : 0.845
 > cat("===========================================================\n")
 ===========================================================
 > 
+# 1. Input data vectors directly from your spreadsheet
+Abs <- c(2.495, 2.355, 2.235, 2.135, 2.005, 1.527)
+Concentration <- c(0.1027985, 0.1013565, 0.1001205, 0.0990905, 0.0977515, 0.0928281)
+
+# 2. Fit linear regression model (Concentration as y, Abs as x)
+model <- lm(Concentration ~ Abs)
+model_summary <- summary(model)
+
+# Extract regression parameters
+intercept <- coef(model)["(Intercept)"]
+slope     <- coef(model)["Abs"]
+r_squared <- model_summary$r.squared
+s_yx      <- model_summary$sigma
+
+# 3. Create scatter plot matching your spreadsheet's axes and layout
+plot(Abs, Concentration, 
+     pch = 16, 
+     col = "#4285F4",  # Google Sheets blue point color
+     cex = 1.3,
+     xlim = c(1.5, 2.5),
+     ylim = c(0, 0.13),
+     main = "Concentration vs. Abs.", 
+     xlab = "Abs.", 
+     ylab = "Concentration")
+
+# Add light gridlines similar to the spreadsheet grid
+grid(col = "lightgray", lty = "solid")
+
+# Re-draw points on top of grid lines
+points(Abs, Concentration, pch = 16, col = "#4285F4", cex = 1.3)
+
+# 4. Add light-blue line of best fit
+abline(model, col = "#AECBFA", lwd = 2.5)
+
+# 5. Format legend with the exact equation and R^2 metric
+eq_label <- sprintf("y = %.4fx + %.4f\nR² = %.4f", slope, intercept, r_squared)
+
+legend("topleft", 
+       legend = c("Concentration Data", "Line of Best Fit", eq_label), 
+       col = c("#4285F4", "#AECBFA", NA), 
+       pch = c(16, NA, NA), 
+       lty = c(NA, 1, NA), 
+       lwd = c(NA, 2.5, NA), 
+       bty = "n", 
+       cex = 0.8)
+
+# 6. Print summary statistics to Console
+cat("\n================ CONCENTRATION VS. ABS OUTPUTS ================\n")
+cat("Regression Equation              : y =", round(slope, 4), "* x +", round(intercept, 4), "\n")
+cat("Slope Error                      :", round(model_summary$coefficients["Abs", "Std. Error"], 6), "\n")
+cat("Std Error of Regression (s_y/x)   :", round(s_yx, 6), "\n")
+cat("Coefficient of Determination (R2):", round(r_squared, 4), "\n")
+cat("================================================================\n")
